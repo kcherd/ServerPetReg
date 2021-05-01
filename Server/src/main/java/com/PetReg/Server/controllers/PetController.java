@@ -7,10 +7,7 @@ import com.google.gson.JsonObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PetController {
@@ -26,5 +23,17 @@ public class PetController {
         //model.addAttribute("pet", petsDao.getPet(id));
         return petsDao.getPet(id);
     }
+
+    @PostMapping(value = "/pet", produces = "application/json")
+    @ResponseBody
+    public long insertUser(@RequestBody String pet){
+       return petsDao.insertPet(pet);
+    }
+
+    @GetMapping("/")
+    public String testPostRequest(Model model){
+        return "pet";
+    }
+
 
 }

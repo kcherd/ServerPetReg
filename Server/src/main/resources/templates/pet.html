@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>pet</title>
 </head>
-<body th:text = "${pet}">
-
+<body>
+<form th:method="POST" th:action="@{/pet}">
+    <textarea name="pet" cols="40" rows="3">{"id":0,"name":"Barbos","age":5,"fio":"Sidorov Andrey Maximovich","address":"Novosibirsk, Vatutina, 23, 42","tel":"89618392031"}</textarea></p>
+    <input type="submit" value="Send"/>
+</form>
 </body>
 </html>

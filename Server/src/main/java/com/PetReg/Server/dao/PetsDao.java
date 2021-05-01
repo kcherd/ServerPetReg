@@ -52,4 +52,116 @@ public class PetsDao {
         return result.toString();
     }
 
+    public long insertPet(String stringPet){
+        Gson gson = new Gson();
+        Pet pet = gson.fromJson(stringPet, Pet.class);
+
+        long idPet = -1;
+        try{
+            //ищем хозяина в базе
+            long idOwner = getOwnerId(pet);
+
+            //если хозяина в базе нет, то добавляем его
+            if(idOwner == -1){
+                //получаем id хозина
+                idOwner = countOwners() + 1;
+
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        "insert into owners values (?, ?, ?, ?)");
+                preparedStatement.setLong(1, idOwner);
+                preparedStatement.setString(2, pet.getFio());
+                preparedStatement.setString(3, pet.getAddress());
+                preparedStatement.setString(4, pet.getTel());
+
+                preparedStatement.executeUpdate();
+            }
+
+            //добавляем данные о животном в базу
+            idPet = countPets() + 1;
+
+            PreparedStatement preparedStatement1 = connection.prepareStatement(
+                    "insert into pets values (?, ?, ?, ?)");
+            preparedStatement1.setLong(1, idPet);
+            preparedStatement1.setString(2,pet.getName());
+            preparedStatement1.setInt(3, pet.getAge());
+            preparedStatement1.setLong(4, idOwner);
+
+            preparedStatement1.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return idPet;
+    }
+
+    public long getOwnerId(Pet pet){
+        long idOwner = -1;
+        try {
+            //ищем хозяина в базе
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "select id from owners where fio = ? and address = ? and tel = ?");
+            preparedStatement.setString(1, pet.getFio());
+            preparedStatement.setString(2, pet.getAddress());
+            preparedStatement.setString(3, pet.getTel());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                idOwner = resultSet.getLong("id");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return idOwner;
+    }
+
+    public long getPetId(Pet pet, long ownerId){
+        long idPet = -1;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "select id from pets where name = ? and age = ? and owner_id = ?");
+            preparedStatement.setString(1, pet.getName());
+            preparedStatement.setInt(2, pet.getAge());
+            preparedStatement.setLong(3, ownerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                idPet = resultSet.getLong("id");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return idPet;
+    }
+
+    public long countOwners(){
+        long countOw = -1;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "select count(*) from owners");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                countOw = resultSet.getLong("count");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return countOw;
+    }
+
+    public long countPets(){
+        long countP = -1;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "select count(*) from pets");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                countP = resultSet.getLong("count");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return countP;
+    }
+
 }
