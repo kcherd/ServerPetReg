@@ -1,10 +1,6 @@
 package com.PetReg.Server.controllers;
 
 import com.PetReg.Server.dao.PetsDao;
-import com.PetReg.Server.models.Pet;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +22,7 @@ public class PetController {
 
     @PostMapping(value = "/pet", produces = "application/json")
     @ResponseBody
-    public long insertUser(@RequestBody String pet){
+    public long insertUser(@RequestParam String pet){
        return petsDao.insertPet(pet);
     }
 
