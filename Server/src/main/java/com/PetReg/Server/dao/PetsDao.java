@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 @Component
 public class PetsDao {
@@ -31,18 +32,35 @@ public class PetsDao {
 
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select pets.id, pets.name, pets.age, owners.fio, owners.address, owners.tel from pets join owners on pets.owner_id = owners.id where pets.id = ?");
+                    "select pets.id, pets.name, pets.birth, owners.fio, owners.address, owners.tel from pets join owners on pets.owner_id = owners.id where pets.id = ?");
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
                 pet.setId(resultSet.getInt("id"));
                 pet.setName(resultSet.getString("name"));
-                pet.setAge(resultSet.getInt("age"));
+                pet.setBirth(resultSet.getInt("birth"));
                 pet.setFio(resultSet.getString("fio"));
                 pet.setAddress(resultSet.getString("address"));
                 pet.setTel(resultSet.getString("tel"));
             }
+
+
+            //информация о прививках
+            PreparedStatement preparedStatement1 = connection.prepareStatement(
+                    "select name, date from vaccinations where id_pet = ?");
+            preparedStatement1.setLong(1, id);
+            ResultSet resultSet1 = preparedStatement1.executeQuery();
+            ArrayList<Pet.Vaccination> vaccinations = new ArrayList<>();
+
+            while (resultSet1.next()){
+                Pet.Vaccination vaccination = new Pet.Vaccination();
+                vaccination.setName(resultSet1.getString("name"));
+                vaccination.setDate(resultSet1.getDate("date"));
+                vaccinations.add(vaccination);
+            }
+
+            pet.setVaccinations(vaccinations);
 
             result.append(gson.toJson(pet));
         }catch (SQLException e){
@@ -83,7 +101,7 @@ public class PetsDao {
                     "insert into pets values (?, ?, ?, ?)");
             preparedStatement1.setLong(1, idPet);
             preparedStatement1.setString(2,pet.getName());
-            preparedStatement1.setInt(3, pet.getAge());
+            preparedStatement1.setInt(3, pet.getBirth());
             preparedStatement1.setLong(4, idOwner);
 
             preparedStatement1.executeUpdate();
@@ -117,9 +135,9 @@ public class PetsDao {
         long idPet = -1;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select id from pets where name = ? and age = ? and owner_id = ?");
+                    "select id from pets where name = ? and birth = ? and owner_id = ?");
             preparedStatement.setString(1, pet.getName());
-            preparedStatement.setInt(2, pet.getAge());
+            preparedStatement.setInt(2, pet.getBirth());
             preparedStatement.setLong(3, ownerId);
             ResultSet resultSet = preparedStatement.executeQuery();
 

@@ -16,7 +16,6 @@ public class PetController {
     @GetMapping(value = "/pet", produces = "application/json")
     @ResponseBody
     public String getPet(@RequestParam("id") int id, Model model){
-        //model.addAttribute("pet", petsDao.getPet(id));
         return petsDao.getPet(id);
     }
 
@@ -30,6 +29,5 @@ public class PetController {
     public String testPostRequest(Model model){
         return "pet";
     }
-
 
 }
