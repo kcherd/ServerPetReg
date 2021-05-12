@@ -30,4 +30,10 @@ public class PetController {
         return "pet";
     }
 
+    @PostMapping(value = "/coordinates", produces = "application/json")
+    @ResponseBody
+    public String setCoordinates(@RequestParam String coordinates){
+        return coordinates;
+    }
+
 }

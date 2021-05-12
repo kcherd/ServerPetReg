@@ -1,5 +1,6 @@
 package com.PetReg.Server.dao;
 
+import com.PetReg.Server.models.Coordinates;
 import com.PetReg.Server.models.Pet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,6 +69,13 @@ public class PetsDao {
         }
 
         return result.toString();
+    }
+
+    public String setCoordinates(String stringCoordinates){
+        Gson gson = new Gson();
+        Coordinates coordinates = gson.fromJson(stringCoordinates, Coordinates.class);
+
+        return "";
     }
 
     public long insertPet(String stringPet){
